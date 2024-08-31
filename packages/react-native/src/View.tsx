@@ -1,5 +1,6 @@
 import { StoryContext, toId } from '@storybook/csf';
-import { addons as managerAddons } from '@storybook/manager-api';
+import { addons as managerAddons, Provider as ManagerProvider } from '@storybook/manager-api';
+import { Provider } from '@storybook/manager';
 import { addons as previewAddons } from '@storybook/preview-api';
 import type { PreviewWithSelection } from '@storybook/preview-web';
 import type { ReactRenderer } from '@storybook/react';
@@ -17,6 +18,18 @@ import dedent from 'dedent';
 import deepmerge from 'deepmerge';
 import { useColorScheme, ActivityIndicator, View as RNView, StyleSheet } from 'react-native';
 import getHost from './rn-host-detect';
+
+class ReactNativeProvider extends Provider {
+  getElements() {}
+
+  handleAPI() {}
+
+  getConfig() {
+    return {};
+  }
+}
+
+const provider = new ReactNativeProvider();
 
 const STORAGE_KEY = 'lastOpenedStory';
 
@@ -267,16 +280,28 @@ export class View {
 
       if (onDeviceUI) {
         return (
-          <SafeAreaProvider>
-            <ThemeProvider theme={appliedTheme as Theme}>
-              <OnDeviceUI
-                storyIndex={self._storyIndex}
-                tabOpen={params.tabOpen}
-                shouldDisableKeyboardAvoidingView={params.shouldDisableKeyboardAvoidingView}
-                keyboardAvoidingViewVerticalOffset={params.keyboardAvoidingViewVerticalOffset}
-              />
-            </ThemeProvider>
-          </SafeAreaProvider>
+          // addons/links relies on the SELECT_STORY event, which uses the navigate method from ManagerProvider - https://github.com/storybookjs/storybook/blob/acd2b709e6f056085e86ce65e57ba0a09e59a4ab/code/core/src/manager-api/modules/stories.ts#L458
+          // web version implementation: https://github.com/storybookjs/storybook/blob/acd2b709e6f056085e86ce65e57ba0a09e59a4ab/code/core/src/manager/index.tsx#L46
+          <ManagerProvider
+            docsOptions={{}}
+            location={{}}
+            navigate={() => {
+              console.log('navigate');
+            }}
+            path="/"
+            provider={provider}
+          >
+            <SafeAreaProvider>
+              <ThemeProvider theme={appliedTheme as Theme}>
+                <OnDeviceUI
+                  storyIndex={self._storyIndex}
+                  tabOpen={params.tabOpen}
+                  shouldDisableKeyboardAvoidingView={params.shouldDisableKeyboardAvoidingView}
+                  keyboardAvoidingViewVerticalOffset={params.keyboardAvoidingViewVerticalOffset}
+                />
+              </ThemeProvider>
+            </SafeAreaProvider>
+          </ManagerProvider>
         );
       } else {
         return <StoryView />;

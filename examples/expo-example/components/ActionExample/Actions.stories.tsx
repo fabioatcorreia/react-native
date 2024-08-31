@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+// import { linkTo } from '@storybook/addon-links';
 import { ActionButton } from './Actions';
 
 const meta = {
@@ -31,11 +32,18 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Basic: Story = {};
+export const Basic: Story = {
+  args: {
+    // onPress: linkTo('ActionButton', 'AnotherAction'),
+  },
+};
 
 export const AnotherAction: Story = {
   argTypes: {
     onPress: { action: 'pressed a different button' },
+  },
+  args: {
+    text: 'Press me instead!',
   },
   play: () => {
     console.log('hello');

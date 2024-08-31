@@ -21,6 +21,7 @@ const main: StorybookConfig = {
     '@storybook/addon-ondevice-knobs',
     '@storybook/addon-ondevice-backgrounds',
     '@storybook/addon-ondevice-actions',
+    // '@storybook/addon-links',
   ],
   reactNative: {
     playFn: false,

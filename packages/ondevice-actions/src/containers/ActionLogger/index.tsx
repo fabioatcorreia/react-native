@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import deepEqual from 'fast-deep-equal';
 import { addons } from '@storybook/manager-api';
-import { SET_CURRENT_STORY } from '@storybook/core-events';
+import { SET_CURRENT_STORY, SELECT_STORY } from '@storybook/core-events';
 import { ActionDisplay, EVENT_ID } from '@storybook/addon-actions';
 import { ActionLogger as ActionLoggerComponent } from '../../components/ActionLogger';
 
@@ -24,6 +24,7 @@ const ActionLogger = ({ active }: ActionLoggerProps) => {
 
   useEffect(() => {
     const handleStoryChange = () => {
+      console.log('handleStoryChange');
       if (clearActionsOnStoryChange) {
         clearActions();
       }
@@ -31,9 +32,11 @@ const ActionLogger = ({ active }: ActionLoggerProps) => {
 
     const channel = addons.getChannel();
     channel.addListener(SET_CURRENT_STORY, handleStoryChange);
+    channel.addListener(SELECT_STORY, handleStoryChange);
 
     return () => {
       channel.removeListener(SET_CURRENT_STORY, handleStoryChange);
+      channel.removeListener(SELECT_STORY, handleStoryChange);
     };
   }, [clearActionsOnStoryChange]);
 

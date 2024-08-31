@@ -293,7 +293,8 @@ const StoryListView = ({ storyIndex }: Props) => {
   const changeStory = (storyId: string) => {
     const channel = addons.getChannel();
 
-    channel.emit(Events.SET_CURRENT_STORY, { storyId });
+    channel.emit(Events.SELECT_STORY, { storyId });
+    // channel.emit(Events.SET_CURRENT_STORY, { storyId });
   };
 
   const renderItem: ListRenderItem<StoryGroup> = React.useCallback(({ item }) => {
